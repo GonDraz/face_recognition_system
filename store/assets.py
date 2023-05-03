@@ -31,7 +31,7 @@ class Images:
 
 
 class Colors:
-    text = "#424242"
-    field = "#FFFFFF"
-    primary = "#E1999F"
-    secondary = "darkblue"    
+    text = "white"
+    button = "darkblue"
+    background = "white"
+    highlightText = "red"

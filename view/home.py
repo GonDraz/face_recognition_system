@@ -3,8 +3,9 @@ from PIL import Image, ImageTk
 # from view.student import Student
 import os
 from controller.window_controller import WindowController
+from store.window_setup import WindowSetup
+from store.assets import *
 
-from store.themes.assets import *
 # from face_recognition import *
 # from attendance import Attendance
 # from helper import Helper
@@ -13,6 +14,8 @@ from store.themes.assets import *
 class Home:
     def __init__(self, root):
         self.root = root
+        self.root.geometry(WindowSetup.screen)
+        self.root.title("Hệ thống điểm danh")
 
         # first imag
         logoImg = Image.open(Images.logo).resize((450, 130), Image.ANTIALIAS)
@@ -42,7 +45,7 @@ class Home:
         backgroundLbl.place(x=0, y=130, width=1530, height=710)
 
         Label(backgroundLbl, text="HỆ THỐNG ĐIỂM DANH BẰNG KHUÔN MẶT", font=(
-            Fonts.primary, 30, "bold"), bg="white", fg="red").place(x=0, y=0, width=1530, height=45)
+            Fonts.primary, 30, "bold"), bg=Colors.background, fg=Colors.highlightText).place(x=0, y=0, width=1530, height=45)
 
         # student button
         svImg = Image.open(Images.svPng).resize((180, 220), Image.ANTIALIAS)
@@ -50,7 +53,7 @@ class Home:
         Button(backgroundLbl, image=self.svPhotoImg, command=self.student_details,
                cursor="hand2").place(x=300, y=50, width=180, height=220)
         Button(backgroundLbl, text="Thông tin sinh viên", command=self.student_details, cursor="hand2", font=(
-            Fonts.primary, 12, "bold"), bg="darkblue", fg="white").place(x=300, y=250, width=180, height=40)
+            Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.text).place(x=300, y=250, width=180, height=40)
 
         # face rec button
         faceRecImg = Image.open(Images.faceRec).resize(
@@ -59,7 +62,7 @@ class Home:
         Button(backgroundLbl, image=self.faceRecPhotoImg, cursor="hand2",
                command=self.face_data).place(x=600, y=50, width=180, height=220)
         Button(backgroundLbl, text="Điểm danh", cursor="hand2", command=self.face_data, font=(
-            Fonts.primary, 15, "bold"), bg="darkblue", fg="white").place(x=600, y=250, width=180, height=40)
+            Fonts.primary, 15, "bold"), bg=Colors.button, fg=Colors.text).place(x=600, y=250, width=180, height=40)
 
         # Attendance button
         checkListImg = Image.open(Images.checkList).resize(
@@ -68,7 +71,7 @@ class Home:
         Button(backgroundLbl, image=self.checkListPhotoImg, cursor="hand2",
                command=self.attendance).place(x=900, y=50, width=180, height=220)
         Button(backgroundLbl, text="Báo cáo", cursor="hand2", command=self.attendance, font=(
-            Fonts.primary, 15, "bold"), bg="darkblue", fg="white").place(x=900, y=250, width=180, height=40)
+            Fonts.primary, 15, "bold"), bg=Colors.button, fg=Colors.text).place(x=900, y=250, width=180, height=40)
 
         # Help button
         helpImg = Image.open(Images.help).resize((180, 220), Image.ANTIALIAS)
@@ -77,7 +80,7 @@ class Home:
         Button(backgroundLbl, image=self.helpPhotoImg, cursor="hand2",
                command=self.helper).place(x=450, y=300, width=180, height=220)
         Button(backgroundLbl, text="Trợ giúp", cursor="hand2", command=self.helper, font=(
-            Fonts.primary, 15, "bold"), bg="darkblue", fg="white").place(x=450, y=500, width=180, height=40)
+            Fonts.primary, 15, "bold"), bg=Colors.button, fg=Colors.text).place(x=450, y=500, width=180, height=40)
 
         # Train button
         # img8=Image.open(r"college_image\HUST.jpg")
@@ -87,7 +90,7 @@ class Home:
         # b1=Button(bg_img,image=self.photoimg8,cursor="hand2",command=self.train_data)
         # b1.place(x=150,y=300,width=180,height=220)
 
-        # b1_1=Button(bg_img,text="",cursor="hand2",command=self.train_data,font=(Fonts.primary,15,"bold"), bg="darkblue", fg="white")
+        # b1_1=Button(bg_img,text="",cursor="hand2",command=self.train_data,font=(Fonts.primary,15,"bold"), bg=Colors.button, fg=Colors.text)
         # b1_1.place(x=150,y=500,width=180,height=40)
 
         # Photo Data button
@@ -98,7 +101,7 @@ class Home:
         # b1=Button(bg_img,image=self.photoimg9,cursor="hand2",command=self.open_img)
         # b1.place(x=450,y=300,width=180,height=220)
 
-        # b1_1=Button(bg_img,text="Photo",cursor="hand2",command=self.open_img,font=(Fonts.primary,15,"bold"), bg="darkblue", fg="white")
+        # b1_1=Button(bg_img,text="Photo",cursor="hand2",command=self.open_img,font=(Fonts.primary,15,"bold"), bg=Colors.button, fg=Colors.text)
         # b1_1.place(x=450,y=500,width=180,height=40)
 
         # #Developer button
@@ -109,7 +112,7 @@ class Home:
         # b1=Button(bg_img,image=self.photoimg10,cursor="hand2")
         # b1.place(x=600,y=300,width=180,height=220)
 
-        # b1_1=Button(bg_img,text="Developer",cursor="hand2",font=(Fonts.primary,15,"bold"), bg="darkblue", fg="white")
+        # b1_1=Button(bg_img,text="Developer",cursor="hand2",font=(Fonts.primary,15,"bold"), bg=Colors.button, fg=Colors.text)
         # b1_1.place(x=600,y=500,width=180,height=40)
 
         # Exit button
@@ -118,7 +121,7 @@ class Home:
         Button(backgroundLbl, image=self.HUSTPhotoImg, cursor="hand2",
                command=WindowController.exit).place(x=750, y=300, width=180, height=220)
         Button(backgroundLbl, text="Thoát", cursor="hand2", font=(Fonts.primary, 15, "bold"),
-               bg="darkblue", fg="white", command=WindowController.exit).place(x=750, y=500, width=180, height=40)
+               bg=Colors.button, fg=Colors.text, command=WindowController.exit).place(x=750, y=500, width=180, height=40)
 
     def open_img(self):
         os.startfile("data")

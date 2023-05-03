@@ -15,7 +15,8 @@ import cv2
 import numpy as np
 import math
 
-from store.themes.assets import Images
+from store.assets import Images
+from store.window_setup import WindowSetup
 
 # from face_detector import get_face_detector, find_faces
 # from face_landmarks import get_landmark_model, detect_marks
@@ -151,33 +152,10 @@ def head_pose_points(img, rotation_vector, translation_vector, camera_matrix ):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Student:
     def __init__(self,root):
         self.root=root
-        self.root.geometry("1530x790+0+0")
+        self.root.geometry(WindowSetup.screen)
         self.root.title("Thông tin sinh viên")
 
 
