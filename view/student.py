@@ -15,8 +15,10 @@ import cv2
 import numpy as np
 import math
 
-from face_detector import get_face_detector, find_faces
-from face_landmarks import get_landmark_model, detect_marks
+from store.themes.assets import Images
+
+# from face_detector import get_face_detector, find_faces
+# from face_landmarks import get_landmark_model, detect_marks
 
 
 def get_2d_points(img, rotation_vector, translation_vector, camera_matrix, val):
@@ -175,6 +177,7 @@ def head_pose_points(img, rotation_vector, translation_vector, camera_matrix ):
 class Student:
     def __init__(self,root):
         self.root=root
+        self.root.geometry("1530x790+0+0")
         self.root.title("Thông tin sinh viên")
 
 
@@ -195,29 +198,29 @@ class Student:
         self.var_teacher=StringVar()
 
 
-        # #first imag
-        # img=Image.open("./college_image/SME.png")
-        # img=img.resize((450,50),Image.ANTIALIAS)
-        # self.photoimg=ImageTk.PhotoImage(img)
+        #first imag
+        img=Image.open(Images.sme)
+        img=img.resize((450,50),Image.ANTIALIAS)
+        self.photoimg=ImageTk.PhotoImage(img)
 
-        # f_lbl=Label(self.root, image=self.photoimg)
-        # f_lbl.place(x=0,y=0,width=500,height=50)
+        f_lbl=Label(self.root, image=self.photoimg)
+        f_lbl.place(x=0,y=0,width=500,height=50)
 
-        # #second imag
-        # img1=Image.open("./college_image/HUST.jpg")
-        # img1=img1.resize((450,50),Image.ANTIALIAS)
-        # self.photoimg1=ImageTk.PhotoImage(img1)
+        #second imag
+        img1=Image.open("./college_image/HUST.jpg")
+        img1=img1.resize((450,50),Image.ANTIALIAS)
+        self.photoimg1=ImageTk.PhotoImage(img1)
 
-        # f_lbl=Label(self.root, image=self.photoimg1)
-        # f_lbl.place(x=450,y=0,width=500,height=50)
+        f_lbl=Label(self.root, image=self.photoimg1)
+        f_lbl.place(x=450,y=0,width=500,height=50)
 
-        # #third imag
-        # img2=Image.open("./college_image/HUST1.png")
-        # img2=img2.resize((450,50),Image.ANTIALIAS)
-        # self.photoimg2=ImageTk.PhotoImage(img2)
+        #third imag
+        img2=Image.open("./college_image/HUST1.png")
+        img2=img2.resize((450,50),Image.ANTIALIAS)
+        self.photoimg2=ImageTk.PhotoImage(img2)
 
-        # f_lbl=Label(self.root, image=self.photoimg2)
-        # f_lbl.place(x=900,y=0,width=500,height=50)
+        f_lbl=Label(self.root, image=self.photoimg2)
+        f_lbl.place(x=900,y=0,width=500,height=50)
 
         #bg imag
         img3=Image.open("./college_image/bg1.jpg")
@@ -980,7 +983,3 @@ class Student:
         os.system("python face_recognition/classifier.py TRAIN data/image Models/20180402-114759.pb Models/facemodel.pkl --batch_size 1000")
         messagebox.showinfo("Success","training thành công",parent=self.root)
 
-if __name__ == "__main__":
-    root=Tk()
-    obj=Student(root)
-    root.mainloop() 

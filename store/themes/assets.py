@@ -31,5 +31,7 @@ class Images:
 
 
 class Colors:
-    def __init__(self) -> None:
-        pass
+    text = "#424242"
+    field = "#FFFFFF"
+    primary = "#E1999F"
+    secondary = "darkblue"    
