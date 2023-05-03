@@ -44,36 +44,23 @@ class Home:
         Button(backgroundLbl, text="Thông tin sinh viên", command=self.exit,cursor="hand2", font=("Arial", 12, "bold"), bg="darkblue", fg="white").place(x=300, y=250, width=180, height=40)
 
         # face rec button
-        faceRecImg = Image.open("./assets/images/face_rec.png").resize((180, 220), Image.ANTIALIAS)
+        faceRecImg = Image.open(Images.faceRec).resize((180, 220), Image.ANTIALIAS)
         self.faceRecPhotoImg = ImageTk.PhotoImage(faceRecImg)
         Button(backgroundLbl, image=self.faceRecPhotoImg,cursor="hand2", command=self.face_data).place(x=600, y=50, width=180, height=220)
         Button(backgroundLbl, text="Điểm danh", cursor="hand2", command=self.face_data, font=(Fonts.primary, 15, "bold"), bg="darkblue", fg="white").place(x=600, y=250, width=180, height=40)
 
         # Attendance button
-        img6 = Image.open("./assets/images/check_list.jpg")
-        img6 = img6.resize((180, 220), Image.ANTIALIAS)
-        self.photoimg6 = ImageTk.PhotoImage(img6)
-
-        b1 = Button(backgroundLbl, image=self.photoimg6,
-                    cursor="hand2", command=self.attendance)
-        b1.place(x=900, y=50, width=180, height=220)
-
-        b1_1 = Button(backgroundLbl, text="Báo cáo", cursor="hand2", command=self.attendance, font=(
-            "Arial", 15, "bold"), bg="darkblue", fg="white")
-        b1_1.place(x=900, y=250, width=180, height=40)
+        checkListImg = Image.open(Images.checkList).resize((180, 220), Image.ANTIALIAS)
+        self.checkListPhotoImg = ImageTk.PhotoImage(checkListImg)
+        Button(backgroundLbl, image=self.checkListPhotoImg,cursor="hand2", command=self.attendance).place(x=900, y=50, width=180, height=220)
+        Button(backgroundLbl, text="Báo cáo", cursor="hand2", command=self.attendance, font=("Arial", 15, "bold"), bg="darkblue", fg="white").place(x=900, y=250, width=180, height=40)
 
         # Help button
-        img7 = Image.open("./assets/images/help.png")
-        img7 = img7.resize((180, 220), Image.ANTIALIAS)
-        self.photoimg7 = ImageTk.PhotoImage(img7)
+        helpImg = Image.open(Images.help).resize((180, 220), Image.ANTIALIAS)
+        self.helpPhotoImg = ImageTk.PhotoImage(helpImg)
 
-        b1 = Button(backgroundLbl, image=self.photoimg7,
-                    cursor="hand2", command=self.helper)
-        b1.place(x=450, y=300, width=180, height=220)
-
-        b1_1 = Button(backgroundLbl, text="Trợ giúp", cursor="hand2", command=self.helper, font=(
-            "Arial", 15, "bold"), bg="darkblue", fg="white")
-        b1_1.place(x=450, y=500, width=180, height=40)
+        Button(backgroundLbl, image=self.helpPhotoImg,cursor="hand2", command=self.helper).place(x=450, y=300, width=180, height=220)
+        Button(backgroundLbl, text="Trợ giúp", cursor="hand2", command=self.helper, font=("Arial", 15, "bold"), bg="darkblue", fg="white").place(x=450, y=500, width=180, height=40)
 
         # Train button
         # img8=Image.open(r"college_image\HUST.jpg")
@@ -109,17 +96,10 @@ class Home:
         # b1_1.place(x=600,y=500,width=180,height=40)
 
         # Exit button
-        img11 = Image.open("./assets/images/HUST.jpg")
-        img11 = img11.resize((180, 220), Image.ANTIALIAS)
-        self.photoimg11 = ImageTk.PhotoImage(img11)
-
-        b1 = Button(backgroundLbl, image=self.photoimg11,
-                    cursor="hand2", command=self.exit)
-        b1.place(x=750, y=300, width=180, height=220)
-
-        b1_1 = Button(backgroundLbl, text="Thoát", cursor="hand2", font=(
-            "Arial", 15, "bold"), bg="darkblue", fg="white", command=self.exit)
-        b1_1.place(x=750, y=500, width=180, height=40)
+        HUSTImg = Image.open(Images.HUST).resize((180, 220), Image.ANTIALIAS)
+        self.HUSTPhotoImg = ImageTk.PhotoImage(HUSTImg)
+        Button(backgroundLbl, image=self.HUSTPhotoImg,cursor="hand2", command=self.exit).place(x=750, y=300, width=180, height=220)
+        Button(backgroundLbl, text="Thoát", cursor="hand2", font=("Arial", 15, "bold"), bg="darkblue", fg="white", command=self.exit).place(x=750, y=500, width=180, height=40)
 
     def open_img(self):
         os.startfile("data")
