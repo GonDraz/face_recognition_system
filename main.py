@@ -1,9 +1,10 @@
+from router.router import Router
 from store.window_setup import *
-from view.home import Home 
 
-# def main():
-#     return
+def main():
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~run program~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
 if __name__ == "__main__":
-    Home(WindowSetup.root)
-    WindowSetup.root.mainloop()
+    main()
+    Router.home(WindowSetup.root)

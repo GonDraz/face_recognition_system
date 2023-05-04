@@ -1,4 +1,4 @@
-
+from PIL import Image
 
 class Assets:
     _assets = "./assets/"
@@ -12,26 +12,26 @@ class Fonts:
     primary = "Arial"
 
 class Images:
-    background = Assets._images + "background.jpg"
-    checkList = Assets._images + "check_list.jpg"
-    classJpg = Assets._images + "class.jpg"
-    classPng = Assets._images + "class.png"
-    coverJpg = Assets._images + "cover.jpg"
-    coverPng = Assets._images + "cover.png"
-    faceRec = Assets._images + "face_rec.png"
-    help = Assets._images + "help.png"
-    HUSTMid = Assets._images + "HUST_mid.png"
-    HUST = Assets._images + "HUST.jpg"
-    HUST1 = Assets._images + "HUST1.png"
-    logo = Assets._images + "logo.png"
-    sis = Assets._images + "sis.png"
-    sme = Assets._images + "sme.png"
-    svJpg = Assets._images + "sv.jpg"
-    svPng = Assets._images + "sv.png"
+    background = Image.open(Assets._images + "background.jpg")
+    checkList = Image.open(Assets._images + "check_list.jpg")
+    classJpg = Image.open(Assets._images + "class.jpg")
+    classPng = Image.open(Assets._images + "class.png")
+    coverJpg = Image.open(Assets._images + "cover.jpg")
+    coverPng = Image.open(Assets._images + "cover.png")
+    faceRec = Image.open(Assets._images + "face_rec.png")
+    help = Image.open(Assets._images + "help.png")
+    HUSTMid = Image.open(Assets._images + "HUST_mid.png")
+    HUST = Image.open(Assets._images + "HUST.jpg")
+    HUST1 = Image.open(Assets._images + "HUST1.png")
+    logo = Image.open(Assets._images + "logo.png")
+    sis = Image.open(Assets._images + "sis.png")
+    sme = Image.open(Assets._images + "sme.png")
+    svJpg = Image.open(Assets._images + "sv.jpg")
+    svPng = Image.open(Assets._images + "sv.png")
 
 
 class Colors:
-    text = "white"
+    textButton = "white"
     button = "darkblue"
     background = "white"
     highlightText = "red"

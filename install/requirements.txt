@@ -12,3 +12,6 @@ tk
 tkcalendar
 mysql-connector-python
 pandas
+-U scikit-learn
+pyfirmata
+matplotlib
