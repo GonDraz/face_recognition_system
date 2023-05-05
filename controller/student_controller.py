@@ -24,7 +24,7 @@ class StudentController:
 
     # ============= FUNCTION DECRATION================
     def add_data(self):
-        if self.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
+        if self.view.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
             messagebox.showerror(
                 "Error", "Phải điền đầy các mục", parent=self.root)
         else:

@@ -479,72 +479,72 @@ class StudentView:
         self.student_table.bind("<ButtonRelease>", self.get_cursor)
         self.fetch_data()
 
-    # ============= FUNCTION DECRATION================
-    def add_data(self):
-        if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
-            messagebox.showerror(
-                "Error", "Phải điền đầy các mục", parent=self.root)
-        else:
-            try:
-                conn = mysql.connector.connect(
-                    host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                my_cursor = conn.cursor()
-                my_cursor.execute("insert into student values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (
-                    self.var_dep.get(),
-                    self.var_course.get(),
-                    self.var_year.get(),
-                    self.var_semester.get(),
-                    self.var_std_id.get(),
-                    self.var_std_name.get(),
-                    self.var_div.get(),
-                    self.var_roll.get(),
-                    self.var_gender.get(),
-                    self.var_dob.get(),
-                    self.var_mail.get(),
-                    self.var_phone.get(),
-                    self.var_address.get(),
-                    self.var_teacher.get(),
-                    self.var_radio1.get()
+    # # ============= FUNCTION DECRATION================
+    # def add_data(self):
+    #     if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
+    #         messagebox.showerror(
+    #             "Error", "Phải điền đầy các mục", parent=self.root)
+    #     else:
+    #         try:
+    #             conn = mysql.connector.connect(
+    #                 host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
+    #             my_cursor = conn.cursor()
+    #             my_cursor.execute("insert into student values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (
+    #                 self.var_dep.get(),
+    #                 self.var_course.get(),
+    #                 self.var_year.get(),
+    #                 self.var_semester.get(),
+    #                 self.var_std_id.get(),
+    #                 self.var_std_name.get(),
+    #                 self.var_div.get(),
+    #                 self.var_roll.get(),
+    #                 self.var_gender.get(),
+    #                 self.var_dob.get(),
+    #                 self.var_mail.get(),
+    #                 self.var_phone.get(),
+    #                 self.var_address.get(),
+    #                 self.var_teacher.get(),
+    #                 self.var_radio1.get()
 
-                ))
-                conn.commit()
-                self.fetch_data()
-                conn.close()
-                n = str(self.var_std_id.get())
-                path = "data/images"
-                os.makedirs(path, exist_ok=True)
-                path = os.path.join(path, n)
-                os.makedirs(path, exist_ok=True)
+    #             ))
+    #             conn.commit()
+    #             self.fetch_data()
+    #             conn.close()
+    #             n = str(self.var_std_id.get())
+    #             path = "data/images"
+    #             os.makedirs(path, exist_ok=True)
+    #             path = os.path.join(path, n)
+    #             os.makedirs(path, exist_ok=True)
 
-                studentData = {
-                    "dep": self.var_dep.get(),
-                    "course": self.var_course.get(),
-                    "year": self.var_year.get(),
-                    "semester": self.var_semester.get(),
-                    "id": self.var_std_id.get(),
-                    "name": self.var_std_name.get(),
-                    "div": self.var_div.get(),
-                    "roll": self.var_roll.get(),
-                    "gender": self.var_gender.get(),
-                    "dob": self.var_dob.get(),
-                    "mail": self.var_mail.get(),
-                    "phone": self.var_phone.get(),
-                    "address": self.var_address.get(),
-                    "teacher": self.var_teacher.get(),
-                }
+    #             studentData = {
+    #                 "dep": self.var_dep.get(),
+    #                 "course": self.var_course.get(),
+    #                 "year": self.var_year.get(),
+    #                 "semester": self.var_semester.get(),
+    #                 "id": self.var_std_id.get(),
+    #                 "name": self.var_std_name.get(),
+    #                 "div": self.var_div.get(),
+    #                 "roll": self.var_roll.get(),
+    #                 "gender": self.var_gender.get(),
+    #                 "dob": self.var_dob.get(),
+    #                 "mail": self.var_mail.get(),
+    #                 "phone": self.var_phone.get(),
+    #                 "address": self.var_address.get(),
+    #                 "teacher": self.var_teacher.get(),
+    #             }
 
-                path = "data/info"
-                os.makedirs(path, exist_ok=True)
-                path = os.path.join(path, n + ".json")
+    #             path = "data/info"
+    #             os.makedirs(path, exist_ok=True)
+    #             path = os.path.join(path, n + ".json")
 
-                with open(path, "w", encoding='utf-8') as outfile:
-                    json.dump(studentData, outfile, ensure_ascii=False)
+    #             with open(path, "w", encoding='utf-8') as outfile:
+    #                 json.dump(studentData, outfile, ensure_ascii=False)
 
-                messagebox.showinfo(
-                    "Success", "Đăng ký thành công", parent=self.root)
-            except Exception as es:
-                messagebox.showerror(
-                    "Error", f"due to :{str(es)}", parent=self.root)
+    #             messagebox.showinfo(
+    #                 "Success", "Đăng ký thành công", parent=self.root)
+    #         except Exception as es:
+    #             messagebox.showerror(
+    #                 "Error", f"due to :{str(es)}", parent=self.root)
 
     # ================= fetch data =========================
     def fetch_data(self):

@@ -2,10 +2,6 @@ from tkinter import *
 from PIL import ImageTk
 from store.assets import *
 
-# from face_recognition import *
-# from attendance import Attendance
-# from helper import Helper
-
 
 class HomeView:
 
