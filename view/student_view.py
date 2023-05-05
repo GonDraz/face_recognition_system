@@ -14,10 +14,10 @@ import shutil
 import cv2
 import numpy as np
 import math
-from include.face_landmarks import get_landmark_model
 
 from store.assets import *
 
+from include.face_landmarks import get_landmark_model
 from include.face_detector import get_face_detector, find_faces
 
 
@@ -169,26 +169,25 @@ class StudentView:
         self.var_teacher = StringVar()
         self.var_radio1 = StringVar()
 
-
-        #first imag
+        # first imag
         self.smeImg = ImageTk.PhotoImage(
             Images.sme.resize((450, 50), Image.ANTIALIAS))
         Label(self.root, image=self.smeImg).place(
             x=0, y=0, width=500, height=50)
 
-        #second imag
+        # second imag
         self.HUSTImg = ImageTk.PhotoImage(
             Images.HUST.resize((450, 50), Image.ANTIALIAS))
         Label(self.root, image=self.HUSTImg).place(
             x=450, y=0, width=500, height=50)
 
-        #third imag
+        # third imag
         self.HUST1Img = ImageTk.PhotoImage(
             Images.HUST1.resize((450, 50), Image.ANTIALIAS))
         Label(self.root, image=self.HUST1Img).place(
             x=900, y=0, width=500, height=50)
 
-        #bg imag
+        # bg imag
         self.backgroundImg = ImageTk.PhotoImage(
             Images.background.resize((1530, 710), Image.ANTIALIAS))
 
@@ -375,7 +374,7 @@ class StudentView:
                           relief=RIDGE, bg=Colors.background)
         btn_frame.place(x=0, y=215, width=715, height=100)
 
-        save_btn = Button(btn_frame, text="Lưu", command=self.add_data, width=15, font=(
+        save_btn = Button(btn_frame, text="Lưu", command=self.controller.add_data, width=15, font=(
             Fonts.primary, 13, "bold"), bg=Colors.button, fg=Colors.textButton)
         save_btn.grid(row=0, column=0)
 
@@ -408,11 +407,13 @@ class StudentView:
                                  text="DANH SÁCH LỚP", font=(Fonts.primary, 12, "bold"))
         Right_Frame.place(x=680, y=30, width=660, height=580)
 
-        self.photoImg_right = ImageTk.PhotoImage(Images.classJpg.resize((720, 150), Image.ANTIALIAS))
+        self.photoImg_right = ImageTk.PhotoImage(
+            Images.classJpg.resize((720, 150), Image.ANTIALIAS))
 
-        Label(Right_Frame, image=self.photoImg_right).place(x=5, y=0, width=720, height=130)
+        Label(Right_Frame, image=self.photoImg_right).place(
+            x=5, y=0, width=720, height=130)
 
-        #=================SEARCH===========
+        # =================SEARCH===========
         search_Frame = LabelFrame(
             Right_Frame, bd=2, bg=Colors.background, relief=RIDGE, font=(Fonts.primary, 12, "bold"))
         search_Frame.place(x=5, y=135, width=700, height=40)
@@ -425,7 +426,7 @@ class StudentView:
             Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.delete_all)
         showAll_btn.grid(row=0, column=4, padx=4)
 
-        #=====================table frame================
+        # =====================table frame================
         table_Frame = Frame(Right_Frame, bd=2,
                             bg=Colors.background, relief=RIDGE)
         table_Frame.place(x=5, y=210, width=650, height=350)
@@ -478,7 +479,7 @@ class StudentView:
         self.student_table.bind("<ButtonRelease>", self.get_cursor)
         self.fetch_data()
 
-    #============= FUNCTION DECRATION================
+    # ============= FUNCTION DECRATION================
     def add_data(self):
         if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
@@ -560,7 +561,7 @@ class StudentView:
 
         conn.close()
 
-    #=============== get cursor =========================
+    # =============== get cursor =========================
     def get_cursor(self, event=""):
         cursor_focus = self.student_table.focus()
         content = self.student_table.item(cursor_focus)
@@ -582,7 +583,7 @@ class StudentView:
         self.var_teacher.set(data[13]),
         self.var_radio1.set(data[14])
 
-    #=================create new class function ===========================
+    # =================create new class function ===========================
     def create_new_class(self):
         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
             ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
@@ -609,8 +610,8 @@ class StudentView:
             messagebox.showerror(
                 "Error", f"due to :{str(es)}", parent=self.root)
         return
-    
-    #=================Update function=================
+
+    # =================Update function=================
     def update_data(self):
         if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
@@ -674,7 +675,7 @@ class StudentView:
                 messagebox.showerror(
                     "Error", f"due to :{str(es)}", parent=self.root)
 
-    #=================== delete function ====================
+    # =================== delete function ====================
     def delete_data(self):
         if self.var_std_id.get() == "":
             messagebox.showerror("Error", "Phải ghi MSSV", parent=self.root)
@@ -706,7 +707,7 @@ class StudentView:
                 messagebox.showerror(
                     "Error", f"due to :{str(es)}", parent=self.root)
 
-    #=========== delete all function ===========================
+    # =========== delete all function ===========================
     def delete_all(self):
         try:
             delete = messagebox.askyesno(
@@ -733,7 +734,7 @@ class StudentView:
             messagebox.showerror(
                 "Error", f"due to :{str(es)}", parent=self.root)
 
-    #=========== reset function ===========================
+    # =========== reset function ===========================
     def reset_data(self):
         self.var_dep.set("Chọn ngành")
         self.var_course.set("Chọn khóa")
@@ -751,7 +752,7 @@ class StudentView:
         self.var_teacher.set("")
         self.var_radio1.set("")
 
-#===================== generate data set (take photo sample) ==============
+# ===================== generate data set (take photo sample) ==============
     def generate_dataset(self):
         if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
@@ -775,7 +776,7 @@ class StudentView:
                     self.var_course.get(),
                     self.var_year.get(),
                     self.var_semester.get(),
-                    #self.var_std_name.get(),
+                    # self.var_std_name.get(),
                     self.var_div.get(),
                     self.var_roll.get(),
                     self.var_gender.get(),
@@ -989,7 +990,8 @@ class StudentView:
                     "Error", f"due to :{str(es)}", parent=self.root)
 
 
-#========================================================================
+# ========================================================================
+
 
     def train_classifier(self):
         os.system("python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")
