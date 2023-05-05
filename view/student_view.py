@@ -14,11 +14,11 @@ import shutil
 import cv2
 import numpy as np
 import math
+from include.face_landmarks import get_landmark_model
 
 from store.assets import *
-from store.window_setup import WindowSetup
 
-# from face_detector import get_face_detector, find_faces
+from include.face_detector import get_face_detector, find_faces
 
 
 def get_2d_points(img, rotation_vector, translation_vector, camera_matrix, val):
@@ -167,6 +167,8 @@ class StudentView:
         self.var_phone = StringVar()
         self.var_address = StringVar()
         self.var_teacher = StringVar()
+        self.var_radio1 = StringVar()
+
 
         #first imag
         self.smeImg = ImageTk.PhotoImage(
@@ -269,7 +271,7 @@ class StudentView:
             Fonts.primary, 12, "bold"), bg=Colors.background)
         studentID_label.grid(row=0, column=0, padx=10, pady=5, sticky=W)
 
-        studentID_entry = ttk.Entry(
+        studentID_entry = Entry(
             class_student_Frame, textvariable=self.var_std_id, width=17, font=(Fonts.primary, 12, "bold"))
         studentID_entry.grid(row=0, column=1, padx=10, pady=5, sticky=W)
 
@@ -278,7 +280,7 @@ class StudentView:
             Fonts.primary, 12, "bold"), bg=Colors.background)
         studentName_label.grid(row=0, column=2, padx=10, pady=5, sticky=W)
 
-        studentName_entry = ttk.Entry(
+        studentName_entry = Entry(
             class_student_Frame, textvariable=self.var_std_name, width=17, font=(Fonts.primary, 12, "bold"))
         studentName_entry.grid(row=0, column=3, padx=10, pady=5, sticky=W)
 
@@ -299,7 +301,7 @@ class StudentView:
             Fonts.primary, 12, "bold"), bg=Colors.background)
         roll_NO_label.grid(row=1, column=2, padx=10, pady=5, sticky=W)
 
-        roll_NO_entry = ttk.Entry(
+        roll_NO_entry = Entry(
             class_student_Frame, textvariable=self.var_roll, width=17, font=(Fonts.primary, 12, "bold"))
         roll_NO_entry.grid(row=1, column=3, padx=10, pady=5, sticky=W)
 
@@ -319,7 +321,7 @@ class StudentView:
                           font=(Fonts.primary, 12, "bold"), bg=Colors.background)
         DOB_label.grid(row=2, column=2, padx=10, pady=5, sticky=W)
 
-        DOB_entry = ttk.Entry(
+        DOB_entry = Entry(
             class_student_Frame, textvariable=self.var_dob, width=17, font=(Fonts.primary, 12, "bold"))
         DOB_entry.grid(row=2, column=3, padx=10, pady=5, sticky=W)
 
@@ -328,7 +330,7 @@ class StudentView:
                             font=(Fonts.primary, 12, "bold"), bg=Colors.background)
         email_label.grid(row=3, column=0, padx=10, pady=5, sticky=W)
 
-        email_entry = ttk.Entry(
+        email_entry = Entry(
             class_student_Frame, textvariable=self.var_mail, width=17, font=(Fonts.primary, 12, "bold"))
         email_entry.grid(row=3, column=1, padx=10, pady=5, sticky=W)
 
@@ -337,37 +339,36 @@ class StudentView:
                             font=(Fonts.primary, 12, "bold"), bg=Colors.background)
         phone_label.grid(row=3, column=2, padx=10, pady=5, sticky=W)
 
-        phone_entry = ttk.Entry(
+        phone_entry = Entry(
             class_student_Frame, textvariable=self.var_phone, width=17, font=(Fonts.primary, 12, "bold"))
         phone_entry.grid(row=3, column=3, padx=10, pady=5, sticky=W)
 
         # Address
-        adderss_label = Label(class_student_Frame, text="Địa chỉ:", font=(
+        address_label = Label(class_student_Frame, text="Địa chỉ:", font=(
             Fonts.primary, 12, "bold"), bg=Colors.background)
-        adderss_label.grid(row=4, column=0, padx=10, pady=5, sticky=W)
+        address_label.grid(row=4, column=0, padx=10, pady=5, sticky=W)
 
-        adderss_entry = ttk.Entry(
+        address_entry = Entry(
             class_student_Frame, textvariable=self.var_address, width=17, font=(Fonts.primary, 12, "bold"))
-        adderss_entry.grid(row=4, column=1, padx=10, pady=5, sticky=W)
+        address_entry.grid(row=4, column=1, padx=10, pady=5, sticky=W)
 
         # teacher name
         Teacher_name_label = Label(class_student_Frame, text="Giảng viên:", font=(
             Fonts.primary, 12, "bold"), bg=Colors.background)
         Teacher_name_label.grid(row=4, column=2, padx=10, pady=5, sticky=W)
 
-        Teacher_name_entry = ttk.Entry(
+        Teacher_name_entry = Entry(
             class_student_Frame, textvariable=self.var_teacher, width=17, font=(Fonts.primary, 12, "bold"))
         Teacher_name_entry.grid(row=4, column=3, padx=10, pady=5, sticky=W)
 
         # radio button
-        self.var_radio1 = StringVar()
-        radiobtn1 = ttk.Radiobutton(
+        radioBtn1 = Radiobutton(
             class_student_Frame, variable=self.var_radio1, text="Lấy mẫu ảnh", value="YES")
-        radiobtn1.grid(row=6, column=0)
+        radioBtn1.grid(row=6, column=0)
 
-        radiobtn2 = ttk.Radiobutton(
+        radioBtn2 = Radiobutton(
             class_student_Frame, variable=self.var_radio1, text="Chưa lấy mẫu", value="NO")
-        radiobtn2.grid(row=6, column=1)
+        radioBtn2.grid(row=6, column=1)
 
         # button frame
         btn_frame = Frame(class_student_Frame, bd=2,
@@ -407,15 +408,11 @@ class StudentView:
                                  text="DANH SÁCH LỚP", font=(Fonts.primary, 12, "bold"))
         Right_Frame.place(x=680, y=30, width=660, height=580)
 
-        img_right = Image.open("./assets/images//class.jpg")
-        img_right = img_right.resize((720, 150), Image.ANTIALIAS)
-        self.photoimg_right = ImageTk.PhotoImage(img_right)
+        self.photoImg_right = ImageTk.PhotoImage(Images.classJpg.resize((720, 150), Image.ANTIALIAS))
 
-        f_lbl = Label(Right_Frame, image=self.photoimg_right)
-        f_lbl.place(x=5, y=0, width=720, height=130)
+        Label(Right_Frame, image=self.photoImg_right).place(x=5, y=0, width=720, height=130)
 
         #=================SEARCH===========
-
         search_Frame = LabelFrame(
             Right_Frame, bd=2, bg=Colors.background, relief=RIDGE, font=(Fonts.primary, 12, "bold"))
         search_Frame.place(x=5, y=135, width=700, height=40)
@@ -429,13 +426,12 @@ class StudentView:
         showAll_btn.grid(row=0, column=4, padx=4)
 
         #=====================table frame================
-
         table_Frame = Frame(Right_Frame, bd=2,
                             bg=Colors.background, relief=RIDGE)
         table_Frame.place(x=5, y=210, width=650, height=350)
 
-        Scroll_x = ttk.Scrollbar(table_Frame, orient=HORIZONTAL)
-        Scroll_y = ttk.Scrollbar(table_Frame, orient=VERTICAL)
+        Scroll_x = Scrollbar(table_Frame, orient=HORIZONTAL)
+        Scroll_y = Scrollbar(table_Frame, orient=VERTICAL)
 
         self.student_table = ttk.Treeview(table_Frame, column=("dep", "course", "year", "sem", "id",
                                           "name", "div", "Roll", "gender", "dob", "email", "phone", "address", "teacher", "photoSample"))
@@ -536,7 +532,7 @@ class StudentView:
                     "teacher": self.var_teacher.get(),
                 }
 
-                path = "data/infor"
+                path = "data/info"
                 os.makedirs(path, exist_ok=True)
                 path = os.path.join(path, n + ".json")
 
@@ -550,7 +546,6 @@ class StudentView:
                     "Error", f"due to :{str(es)}", parent=self.root)
 
     # ================= fetch data =========================
-
     def fetch_data(self):
         conn = mysql.connector.connect(
             host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
@@ -587,7 +582,7 @@ class StudentView:
         self.var_teacher.set(data[13]),
         self.var_radio1.set(data[14])
 
-    #================= create new class function ===========================
+    #=================create new class function ===========================
     def create_new_class(self):
         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
             ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
@@ -614,8 +609,8 @@ class StudentView:
             messagebox.showerror(
                 "Error", f"due to :{str(es)}", parent=self.root)
         return
+    
     #=================Update function=================
-
     def update_data(self):
         if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
             messagebox.showerror(
@@ -798,34 +793,6 @@ class StudentView:
                 self.reset_data()
                 conn.close()
 
-                # # ============= Load predifiend data on face frontals from openCV ============
-                # face_classifier = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-                #
-                # def face_cropped(img):
-                #     gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-                #     faces=face_classifier.detectMultiScale(gray,1.3,5)
-                #     #Scaling factor=1.3
-                #     #Minimum neighbor=5
-                #
-                #     for(x,y,w,h) in faces:
-                #         face_cropped=img[y:y+h,x:x+w]
-                #         return face_cropped
-                #
-                # cap=cv2.VideoCapture(0)
-                # img_id=0
-                # while True:
-                #     ret,my_frame=cap.read()
-                #     if face_cropped(my_frame) is not None:
-                #         img_id=img_id+1
-                #         face=cv2.resize(face_cropped(my_frame),(160,160))
-                #         face=cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
-                #         file_name_path="data/images/"+str(x[4])+"/"+str(img_id)+".jpg"
-                #         cv2.imwrite(file_name_path,face)
-                #         cv2.putText(face,str(img_id),(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(0,255,0),2)
-                #         cv2.imshow("cropped face",face)
-                #
-                #     if cv2.waitKey(1)==13 or int(img_id)==100:
-                #         break
                 face_model = get_face_detector()
                 landmark_model = get_landmark_model()
                 cap = cv2.VideoCapture(0)  # batcam

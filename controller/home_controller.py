@@ -23,7 +23,7 @@ class HomeController:
         os.startfile("data")
 
     # ================Function buttons===============
-    def student_details(self):
+    def openStudentWindow(self):
         Router.student(Toplevel(self.root))
 
     def face_data(self):

@@ -43,9 +43,9 @@ class HomeView:
         # student button
         self.svImg = ImageTk.PhotoImage(
             Images.svPng.resize((180, 220), Image.ANTIALIAS))
-        Button(backgroundLbl, image=self.svImg, command=controller.student_details,
+        Button(backgroundLbl, image=self.svImg, command=controller.openStudentWindow,
                cursor="hand2").place(x=300, y=50, width=180, height=220)
-        Button(backgroundLbl, text="Thông tin sinh viên", command=controller.student_details, cursor="hand2", font=(
+        Button(backgroundLbl, text="Thông tin sinh viên", command=controller.openStudentWindow, cursor="hand2", font=(
             Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton).place(x=300, y=250, width=180, height=40)
 
         # face rec button
