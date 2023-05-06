@@ -9,4 +9,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    Router.student(WindowSetup.root)
+    Router.home(WindowSetup.root)

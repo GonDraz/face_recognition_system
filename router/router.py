@@ -1,5 +1,5 @@
 
- 
+
 class Router:
 
     def home(root):
@@ -9,9 +9,11 @@ class Router:
     def student(root):
         from controller.student_controller import StudentController
         StudentController(root)
-    
+
     def helper(root):
-        return 
-    
+        from controller.help_controller import HelpController
+        HelpController(root)
+
     def attendance(root):
-        return 
+        from controller.attendance_controller import AttendanceController
+        AttendanceController(root)

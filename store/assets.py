@@ -1,5 +1,6 @@
 from PIL import Image
 
+
 class Assets:
     _assets = "./assets/"
     _fonts = _assets + "fonts/"
@@ -10,6 +11,7 @@ class Assets:
 
 class Fonts:
     primary = "Arial"
+
 
 class Images:
     background = Image.open(Assets._images + "background.jpg")

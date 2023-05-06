@@ -3,7 +3,7 @@
 import csv
 import math
 import os
-import shutil
+import threading
 from tkinter import *
 from tkinter import messagebox, filedialog
 
@@ -26,6 +26,10 @@ class StudentController:
 
         self.model = StudentModel()
         self.view = StudentView(root, self)
+
+        # self.fetch_data_threading = threading.Thread(target=self.fetch_data())
+        # self.fetch_data_threading.start()
+
         self.fetch_data()
 
         self.root.mainloop()
@@ -177,6 +181,7 @@ class StudentController:
                 "Student Delete All", "Thông tin lớp cũ sẽ bị xóa hết, bạn chắc chứ ?", parent=self.root)
             if delete:
                 self.fetch_data()
+
                 messagebox.showinfo("Delete", "Đã làm mới", parent=self.root)
         except Exception as es:
             messagebox.showerror(
@@ -237,6 +242,7 @@ class StudentController:
                 ))
                 self.model.conn.commit()
                 self.fetch_data()
+
                 self.reset_data()
                 self.model.conn.close()
 
