@@ -374,7 +374,7 @@ class StudentView:
                           relief=RIDGE, bg=Colors.background)
         btn_frame.place(x=0, y=215, width=715, height=100)
 
-        save_btn = Button(btn_frame, text="Lưu", command=self.controller.add_data, width=15, font=(
+        save_btn = Button(btn_frame, text="Lưu", command=self.controller.addStudent, width=15, font=(
             Fonts.primary, 13, "bold"), bg=Colors.button, fg=Colors.textButton)
         save_btn.grid(row=0, column=0)
 
@@ -435,7 +435,7 @@ class StudentView:
         Scroll_y = Scrollbar(table_Frame, orient=VERTICAL)
 
         self.student_table = ttk.Treeview(table_Frame, column=("dep", "course", "year", "sem", "id",
-                                          "name", "div", "Roll", "gender", "dob", "email", "phone", "address", "teacher", "photoSample"))
+                                                               "name", "div", "Roll", "gender", "dob", "email", "phone", "address", "teacher", "photoSample"))
 
         Scroll_x.pack(side=BOTTOM, fill=X)
         Scroll_y.pack(side=RIGHT, fill=Y)
@@ -477,7 +477,7 @@ class StudentView:
 
         self.student_table.pack(fill=BOTH, expand=1)
         self.student_table.bind("<ButtonRelease>", self.get_cursor)
-        self.fetch_data()
+        self.controller.fetch_data(self.student_table)
 
     # # ============= FUNCTION DECRATION================
     # def add_data(self):
@@ -547,19 +547,19 @@ class StudentView:
     #                 "Error", f"due to :{str(es)}", parent=self.root)
 
     # ================= fetch data =========================
-    def fetch_data(self):
-        conn = mysql.connector.connect(
-            host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-        my_cursor = conn.cursor()
-        my_cursor.execute("select * from student")
-        data = my_cursor.fetchall()
+    # def fetch_data(self):
+    #     conn = mysql.connector.connect(
+    #         host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
+    #     my_cursor = conn.cursor()
+    #     my_cursor.execute("select * from student")
+    #     data = my_cursor.fetchall()
 
-        self.student_table.delete(*self.student_table.get_children())
-        for i in data:
-            self.student_table.insert("", END, values=i)
-        conn.commit()
+    #     self.student_table.delete(*self.student_table.get_children())
+    #     for i in data:
+    #         self.student_table.insert("", END, values=i)
+    #     conn.commit()
 
-        conn.close()
+    #     conn.close()
 
     # =============== get cursor =========================
     def get_cursor(self, event=""):

@@ -2,7 +2,9 @@
 
 import json
 import os
-from tkinter import messagebox
+from tkinter import *
+from tkinter import messagebox, filedialog
+
 from models.student_model import StudentModel
 from store.window_setup import WindowSetup
 from view.student_view import StudentView
@@ -23,65 +25,29 @@ class StudentController:
         self.root.mainloop()
 
     # ============= FUNCTION DECRATION================
-    def add_data(self):
+    def addStudent(self):
         if self.view.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
             messagebox.showerror(
                 "Error", "Phải điền đầy các mục", parent=self.root)
         else:
             try:
-                conn = mysql.connector.connect(
-                    host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                my_cursor = conn.cursor()
-                my_cursor.execute("insert into student values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (
-                    self.view.var_dep.get(),
-                    self.view.var_course.get(),
-                    self.view.var_year.get(),
-                    self.view.var_semester.get(),
-                    self.view.var_std_id.get(),
-                    self.view.var_std_name.get(),
-                    self.view.var_div.get(),
-                    self.view.var_roll.get(),
-                    self.view.var_gender.get(),
-                    self.view.var_dob.get(),
-                    self.view.var_mail.get(),
-                    self.view.var_phone.get(),
-                    self.view.var_address.get(),
-                    self.view.var_teacher.get(),
-                    self.view.var_radio1.get()
-                ))
-                conn.commit()
+                self.model.addStudent(
+                    var_dep=self.view.var_dep.get(),
+                    var_course=self.view.var_course.get(),
+                    var_year=self.view.var_year.get(),
+                    var_semester=self.view.var_semester.get(),
+                    var_std_id=self.view.var_std_id.get(),
+                    var_std_name=self.view.var_std_name.get(),
+                    var_div=self.view.var_div.get(),
+                    var_roll=self.view.var_roll.get(),
+                    var_gender=self.view.var_gender.get(),
+                    var_dob=self.view.var_dob.get(),
+                    var_mail=self.view.var_mail.get(),
+                    var_phone=self.view.var_phone.get(),
+                    var_address=self.view.var_address.get(),
+                    var_teacher=self.view.var_teacher.get(),
+                    var_radio1=self.view.var_radio1.get())
                 self.fetch_data()
-                conn.close()
-                n = str(self.view.var_std_id.get())
-                path = "data/images"
-                os.makedirs(path, exist_ok=True)
-                path = os.path.join(path, n)
-                os.makedirs(path, exist_ok=True)
-
-                studentData = {
-                    "dep": self.view.var_dep.get(),
-                    "course": self.view.var_course.get(),
-                    "year": self.view.var_year.get(),
-                    "semester": self.view.var_semester.get(),
-                    "id": self.view.var_std_id.get(),
-                    "name": self.view.var_std_name.get(),
-                    "div": self.view.var_div.get(),
-                    "roll": self.view.var_roll.get(),
-                    "gender": self.view.var_gender.get(),
-                    "dob": self.view.var_dob.get(),
-                    "mail": self.view.var_mail.get(),
-                    "phone": self.view.var_phone.get(),
-                    "address": self.view.var_address.get(),
-                    "teacher": self.view.var_teacher.get(),
-                }
-
-                path = "data/info"
-                os.makedirs(path, exist_ok=True)
-                path = os.path.join(path, n + ".json")
-
-                with open(path, "w", encoding='utf-8') as outfile:
-                    json.dump(studentData, outfile, ensure_ascii=False)
-
                 messagebox.showinfo(
                     "Success", "Đăng ký thành công", parent=self.root)
             except Exception as es:
@@ -89,16 +55,16 @@ class StudentController:
                     "Error", f"due to :{str(es)}", parent=self.root)
 
     # ================= fetch data =========================
-    def fetch_data(self):
+    def fetch_data(self, table):
         conn = mysql.connector.connect(
             host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
         my_cursor = conn.cursor()
         my_cursor.execute("select * from student")
         data = my_cursor.fetchall()
 
-        self.student_table.delete(*self.student_table.get_children())
+        self.view.student_table.delete(*table.get_children())
         for i in data:
-            self.student_table.insert("", END, values=i)
+            self.view.student_table.insert("", END, values=i)
         conn.commit()
 
         conn.close()
@@ -533,7 +499,6 @@ class StudentController:
 
 
 # ========================================================================
-
 
     def train_classifier(self):
         os.system("python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")
