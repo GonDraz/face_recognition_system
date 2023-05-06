@@ -1,15 +1,20 @@
 
 
-import json
+import csv
+import math
 import os
+import shutil
 from tkinter import *
 from tkinter import messagebox, filedialog
 
+import cv2
+import numpy as np
+from include.face_detector import find_faces, get_face_detector
+from include.face_landmarks import detect_marks, get_landmark_model
+
 from models.student_model import StudentModel
 from store.window_setup import WindowSetup
-from view.student_view import StudentView
-
-import mysql.connector
+from view.student_view import StudentView, head_pose_points
 
 
 class StudentController:
@@ -21,6 +26,7 @@ class StudentController:
 
         self.model = StudentModel()
         self.view = StudentView(root, self)
+        self.fetch_data()
 
         self.root.mainloop()
 
@@ -55,43 +61,36 @@ class StudentController:
                     "Error", f"due to :{str(es)}", parent=self.root)
 
     # ================= fetch data =========================
-    def fetch_data(self, table):
-        conn = mysql.connector.connect(
-            host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-        my_cursor = conn.cursor()
-        my_cursor.execute("select * from student")
-        data = my_cursor.fetchall()
-
-        self.view.student_table.delete(*table.get_children())
+    def fetch_data(self):
+        data = self.model.LoadStudent()
+        self.view.student_table.delete(*self.view.student_table.get_children())
         for i in data:
             self.view.student_table.insert("", END, values=i)
-        conn.commit()
-
-        conn.close()
 
     # =============== get cursor =========================
     def get_cursor(self, event=""):
-        cursor_focus = self.student_table.focus()
-        content = self.student_table.item(cursor_focus)
+        cursor_focus = self.view.student_table.focus()
+        content = self.view.student_table.item(cursor_focus)
         data = content["values"]
 
-        self.var_dep.set(data[0]),
-        self.var_course.set(data[1]),
-        self.var_year.set(data[2]),
-        self.var_semester.set(data[3]),
-        self.var_std_id.set(data[4]),
-        self.var_std_name.set(data[5]),
-        self.var_div.set(data[6]),
-        self.var_roll.set(data[7]),
-        self.var_gender.set(data[8]),
-        self.var_dob.set(data[9]),
-        self.var_mail.set(data[10]),
-        self.var_phone.set(data[11]),
-        self.var_address.set(data[12]),
-        self.var_teacher.set(data[13]),
-        self.var_radio1.set(data[14])
+        self.view.var_dep.set(data[0]),
+        self.view.var_course.set(data[1]),
+        self.view.var_year.set(data[2]),
+        self.view.var_semester.set(data[3]),
+        self.view.var_std_id.set(data[4]),
+        self.view.var_std_name.set(data[5]),
+        self.view.var_div.set(data[6]),
+        self.view.var_roll.set(data[7]),
+        self.view.var_gender.set(data[8]),
+        self.view.var_dob.set(data[9]),
+        self.view.var_mail.set(data[10]),
+        self.view.var_phone.set(data[11]),
+        self.view.var_address.set(data[12]),
+        self.view.var_teacher.set(data[13]),
+        self.view.var_radio1.set(data[14])
 
     # =================create new class function ===========================
+    # hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
     def create_new_class(self):
         fln = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
             ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
@@ -106,8 +105,8 @@ class StudentController:
                                    "Division", "Roll", "gender",
                                    "dob", "mail", "phone",
                                    "address", "teacher", "photo")])
-                for line in self.student_table.get_children():
-                    data = self.student_table.item(line)["values"]
+                for line in self.view.student_table.get_children():
+                    data = self.view.student_table.item(line)["values"]
                     writer.writerows([(data[0], data[1], data[2],
                                        data[3], data[4], data[5],
                                        data[6], data[7], data[8],
@@ -120,97 +119,53 @@ class StudentController:
         return
 
     # =================Update function=================
-    def update_data(self):
-        if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
+    def updateStudent(self):
+        if self.view.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
             messagebox.showerror(
-                "Error", "Phải điền đầy các mục", parent=self.root)
+                "Error", "Phải điền đầy các mục", parent=self.view.root)
         else:
             try:
                 Update = messagebox.askyesno(
-                    "update", "Cập nhật thông tin này ?", parent=self.root)
-                if Update > 0:
-                    conn = mysql.connector.connect(
-                        host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                    my_cursor = conn.cursor()
-                    my_cursor.execute("update student set dep=%s,course=%s,year=%s,semester=%s,name=%s,division=%s,Roll=%s,gender=%s,Dob=%s,mail=%s,phone=%s,Address=%s,teacher=%s,photoSample=%s where studentID=%s", (
-                        self.var_dep.get(),
-                        self.var_course.get(),
-                        self.var_year.get(),
-                        self.var_semester.get(),
-                        self.var_std_name.get(),
-                        self.var_div.get(),
-                        self.var_roll.get(),
-                        self.var_gender.get(),
-                        self.var_dob.get(),
-                        self.var_mail.get(),
-                        self.var_phone.get(),
-                        self.var_address.get(),
-                        self.var_teacher.get(),
-                        self.var_radio1.get(),
-                        self.var_std_id.get()
-                    ))
-                else:
-                    if not Update:
-                        return
-                messagebox.showinfo("Success", "Đã cập nhật", parent=self.root)
-                conn.commit()
-                self.fetch_data()
-                conn.close()
-                n = str(self.var_std_id.get())
-                path = "data/infor"
-                path = os.path.join(path, n + ".json")
-
-                studentData = {
-                    "dep": self.var_dep.get(),
-                    "course": self.var_course.get(),
-                    "year": self.var_year.get(),
-                    "semester": self.var_semester.get(),
-                    "id": self.var_std_id.get(),
-                    "name": self.var_std_name.get(),
-                    "div": self.var_div.get(),
-                    "roll": self.var_roll.get(),
-                    "gender": self.var_gender.get(),
-                    "dob": self.var_dob.get(),
-                    "mail": self.var_mail.get(),
-                    "phone": self.var_phone.get(),
-                    "address": self.var_address.get(),
-                    "teacher": self.var_teacher.get(),
-                }
-
-                with open(path, "w", encoding='utf-8') as outfile:
-                    json.dump(studentData, outfile, ensure_ascii=False)
+                    "update", "Cập nhật thông tin này ?", parent=self.view.root)
+                if Update:
+                    self.model.updateStudent(
+                        var_dep=self.view.var_dep.get(),
+                        var_course=self.view.var_course.get(),
+                        var_year=self.view.var_year.get(),
+                        var_semester=self.view.var_semester.get(),
+                        var_std_id=self.view.var_std_id.get(),
+                        var_std_name=self.view.var_std_name.get(),
+                        var_div=self.view.var_div.get(),
+                        var_roll=self.view.var_roll.get(),
+                        var_gender=self.view.var_gender.get(),
+                        var_dob=self.view.var_dob.get(),
+                        var_mail=self.view.var_mail.get(),
+                        var_phone=self.view.var_phone.get(),
+                        var_address=self.view.var_address.get(),
+                        var_teacher=self.view.var_teacher.get(),
+                        var_radio1=self.view.var_radio1.get())
+                    self.fetch_data()
+                    messagebox.showinfo(
+                        "Success", "Đã cập nhật", parent=self.root)
             except Exception as es:
                 messagebox.showerror(
                     "Error", f"due to :{str(es)}", parent=self.root)
 
     # =================== delete function ====================
-    def delete_data(self):
-        if self.var_std_id.get() == "":
-            messagebox.showerror("Error", "Phải ghi MSSV", parent=self.root)
+    def deleteStudent(self):
+        if self.view.var_std_id.get() == "":
+            messagebox.showerror("Error", "Phải ghi MSSV",
+                                 parent=self.view.root)
         else:
             try:
                 delete = messagebox.askyesno(
-                    "Delete", "Xóa sinh viên này ?", parent=self.root)
-                if delete > 0:
-                    conn = mysql.connector.connect(
-                        host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                    my_cursor = conn.cursor()
-                    sql = "delete from student where studentID=%s"
-                    val = (self.var_std_id.get(),)
-                    my_cursor.execute(sql, val)
-                else:
-                    if not delete:
-                        return
-
-                conn.commit()
-                self.fetch_data()
-                conn.close()
-                n = str(self.var_std_id.get())
-                path = "data/images/" + n
-                shutil.rmtree(path)
-                path = "data/infor/" + n + ".json"
-                os.remove(path)
-                messagebox.showinfo("Delete", "Đã xóa", parent=self.root)
+                    "Delete", "Xóa sinh viên này ?", parent=self.view.root)
+                if delete:
+                    self.model.deleteStudent(
+                        var_std_id=self.view.var_std_id.get())
+                    self.fetch_data()
+                    messagebox.showinfo("Delete", "Đã xóa",
+                                        parent=self.view.root)
             except Exception as es:
                 messagebox.showerror(
                     "Error", f"due to :{str(es)}", parent=self.root)
@@ -220,87 +175,70 @@ class StudentController:
         try:
             delete = messagebox.askyesno(
                 "Student Delete All", "Thông tin lớp cũ sẽ bị xóa hết, bạn chắc chứ ?", parent=self.root)
-            if delete > 0:
-                conn = mysql.connector.connect(
-                    host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                my_cursor = conn.cursor()
-                sql = "delete from student"
-                my_cursor.execute(sql)
-            else:
-                if not delete:
-                    return
-
-            conn.commit()
-            self.fetch_data()
-            conn.close()
-            if os.path.exists("data"):
-                shutil.rmtree("data")
-            if os.path.exists("attendance"):
-                shutil.rmtree("attendance")
-            messagebox.showinfo("Delete", "Đã làm mới", parent=self.root)
+            if delete:
+                self.fetch_data()
+                messagebox.showinfo("Delete", "Đã làm mới", parent=self.root)
         except Exception as es:
             messagebox.showerror(
                 "Error", f"due to :{str(es)}", parent=self.root)
 
     # =========== reset function ===========================
     def reset_data(self):
-        self.var_dep.set("Chọn ngành")
-        self.var_course.set("Chọn khóa")
-        self.var_year.set("Chọn năm")
-        self.var_semester.set("Chọn kỳ")
-        self.var_std_id.set("")
-        self.var_std_name.set("")
-        self.var_div.set("Chọn lớp")
-        self.var_roll.set("")
-        self.var_gender.set("Giới tính")
-        self.var_dob.set("")
-        self.var_mail.set("")
-        self.var_phone.set("")
-        self.var_address.set("")
-        self.var_teacher.set("")
-        self.var_radio1.set("")
+        self.view.var_dep.set("Chọn ngành")
+        self.view.var_course.set("Chọn khóa")
+        self.view.var_year.set("Chọn năm")
+        self.view.var_semester.set("Chọn kỳ")
+        self.view.var_std_id.set("")
+        self.view.var_std_name.set("")
+        self.view.var_div.set("Chọn lớp")
+        self.view.var_roll.set("")
+        self.view.var_gender.set("Giới tính")
+        self.view.var_dob.set("")
+        self.view.var_mail.set("")
+        self.view.var_phone.set("")
+        self.view.var_address.set("")
+        self.view.var_teacher.set("")
+        self.view.var_radio1.set("")
 
 # ===================== generate data set (take photo sample) ==============
+    # hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
     def generate_dataset(self):
-        if self.var_dep.get() == "Chọn ngành" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
+        if self.view.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
             messagebox.showerror(
                 "Error", "Phải điền đầy các mục", parent=self.root)
         else:
             try:
-                conn = mysql.connector.connect(
-                    host="localhost", username="root", password="Shj@6863#jw", database="diemdanhdb")
-                my_cursor = conn.cursor()
-                my_cursor.execute("select * from student")
-                myresult = my_cursor.fetchall()
-                id = self.var_std_id.get()
+
+                self.model.my_cursor.execute("select * from student")
+                myresult = self.model.my_cursor.fetchall()
+                id = self.view.var_std_id.get()
                 print(id)
                 for x in myresult:
                     print(x)
                     if x[4] == int(id):
                         print(x)
                         break
-                my_cursor.execute("update student set dep=%s,course=%s,year=%s,semester=%s,division=%s,roll=%s,gender=%s,dob=%s,mail=%s,phone=%s,address=%s,teacher=%s,photoSample=%s where studentID=%s", (
-                    self.var_dep.get(),
-                    self.var_course.get(),
-                    self.var_year.get(),
-                    self.var_semester.get(),
+                self.model.my_cursor.execute("update student set dep=%s,course=%s,year=%s,semester=%s,division=%s,roll=%s,gender=%s,dob=%s,mail=%s,phone=%s,address=%s,teacher=%s,photoSample=%s where studentID=%s", (
+                    self.view.var_dep.get(),
+                    self.view.var_course.get(),
+                    self.view.var_year.get(),
+                    self.view.var_semester.get(),
                     # self.var_std_name.get(),
-                    self.var_div.get(),
-                    self.var_roll.get(),
-                    self.var_gender.get(),
-                    self.var_dob.get(),
-                    self.var_mail.get(),
-                    self.var_phone.get(),
-                    self.var_address.get(),
-                    self.var_teacher.get(),
-                    self.var_radio1.get(),
-                    self.var_std_id.get()
-
+                    self.view.var_div.get(),
+                    self.view.var_roll.get(),
+                    self.view.var_gender.get(),
+                    self.view.var_dob.get(),
+                    self.view.var_mail.get(),
+                    self.view.var_phone.get(),
+                    self.view.var_address.get(),
+                    self.view.var_teacher.get(),
+                    self.view.var_radio1.get(),
+                    self.view.var_std_id.get()
                 ))
-                conn.commit()
+                self.model.conn.commit()
                 self.fetch_data()
                 self.reset_data()
-                conn.close()
+                self.model.conn.close()
 
                 face_model = get_face_detector()
                 landmark_model = get_landmark_model()
@@ -495,7 +433,7 @@ class StudentController:
                 messagebox.showinfo("result", "Đã lấy ảnh")
             except Exception as es:
                 messagebox.showerror(
-                    "Error", f"due to :{str(es)}", parent=self.root)
+                    "Error", f"due to :{str(es)}", parent=self.view.root)
 
 
 # ========================================================================
@@ -503,4 +441,5 @@ class StudentController:
     def train_classifier(self):
         os.system("python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")
         os.system("python face_recognition/classifier.py TRAIN data/image Models/20180402-114759.pb Models/facemodel.pkl --batch_size 1000")
-        messagebox.showinfo("Success", "training thành công", parent=self.root)
+        messagebox.showinfo("Success", "training thành công",
+                            parent=self.view.root)
