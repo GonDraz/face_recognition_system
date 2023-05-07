@@ -35,12 +35,11 @@ class AttendanceView:
         self.to_date_var = StringVar()
 
         # bg imag
-        self.photoimg3 = ImageTk.PhotoImage(
+        self.backgroundImg = ImageTk.PhotoImage(
             Images.background.resize((1500, 710), Image.ANTIALIAS))
 
-        bg_img = Label(self.root, image=self.photoimg3)
+        bg_img = Label(self.root, image=self.backgroundImg)
         bg_img.place(x=0, y=0, width=1500, height=700)
-
         self.main_frame = Frame(bg_img, bd=2, bg=Colors.background)
         self.main_frame.place(x=0, y=50, width=1400, height=600)
 
@@ -89,25 +88,20 @@ class AttendanceView:
 
         #=========================================#
 
-        import_btn = Button(self.main_frame, text="Nhập danh sách lớp", width=16, font=(
-            Fonts.primary, 14, "bold"), bg="blue", fg="white", command=self.importClass)
-        import_btn.place(x=575, y=550)
+        Button(self.main_frame, text="Nhập danh sách lớp", width=16, font=(
+            Fonts.primary, 14, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.importClass).place(x=575, y=550)
 
-        report_btn = Button(self.left_frame, text="Sửa báo cáo", width=12, font=(
-            Fonts.primary, 12, "bold"), bg="blue", fg="white", command=self.importReport)
-        report_btn.place(x=506, y=180)
+        Button(self.left_frame, text="Sửa báo cáo", width=12, font=(
+            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.importReport).place(x=506, y=180)
 
-        report_btn = Button(self.left_frame, text="Xuất báo cáo", width=12, font=(
-            Fonts.primary, 12, "bold"), bg="blue", fg="white", command=self.exportReport)
-        report_btn.place(x=506, y=280)
+        Button(self.left_frame, text="Xuất báo cáo", width=12, font=(
+            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.exportReport).place(x=506, y=280)
 
-        update_table_btn = Button(self.left_frame, text="Cập nhật", width=10, font=(
-            Fonts.primary, 12, "bold"), bg="blue", fg="white", command=self.updateTable)
-        update_table_btn.place(x=270, y=8)
+        Button(self.left_frame, text="Cập nhật", width=10, font=(
+            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.updateTable).place(x=270, y=8)
 
-        update_chart_btn = Button(self.right_frame, text="Cập nhật", width=10, font=(
-            Fonts.primary, 12, "bold"), bg="blue", fg="white", command=self.updateChart)
-        update_chart_btn.place(x=506, y=10)
+        Button(self.right_frame, text="Cập nhật", width=10, font=(
+            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.updateChart).place(x=506, y=10)
 
         #=========================================#
 
