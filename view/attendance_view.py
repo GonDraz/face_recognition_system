@@ -1,16 +1,11 @@
 from tkinter import *
-from tkinter import messagebox, ttk, filedialog
+from tkinter import ttk
 from tkcalendar import DateEntry
 
 from PIL import Image, ImageTk
 
-import os
-import csv
+
 import pandas as pd
-import tkinter as tk
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from datetime import datetime
 
 from store.assets import *
 
@@ -25,10 +20,6 @@ class AttendanceView:
         self.var_std_id = StringVar()
         self.var_std_name = StringVar()
         self.var_note = StringVar()
-
-        self.student_df = pd.DataFrame()
-        self.attendances = []
-        self.times = {}
 
         self.date_var = StringVar()
         self.from_date_var = StringVar()
@@ -65,7 +56,7 @@ class AttendanceView:
 
         self.student_table = ttk.Treeview(
             self.table_frame, column=("Atd", "id", "name", "note"))
-        self.student_table.bind("<Double-1>", self.onDoubleClicked)
+        self.student_table.bind("<Double-1>", self.controller.onDoubleClicked)
 
         # Scroll_x.pack(side=BOTTOM,fill=X)
         Scroll_y.pack(side=RIGHT, fill=Y)
@@ -89,19 +80,19 @@ class AttendanceView:
         #=========================================#
 
         Button(self.main_frame, text="Nhập danh sách lớp", width=16, font=(
-            Fonts.primary, 14, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.importClass).place(x=575, y=550)
+            Fonts.primary, 14, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.controller.importClass).place(x=575, y=550)
 
         Button(self.left_frame, text="Sửa báo cáo", width=12, font=(
-            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.importReport).place(x=506, y=180)
+            Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.controller.importReport).place(x=506, y=180)
 
         Button(self.left_frame, text="Xuất báo cáo", width=12, font=(
-            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.exportReport).place(x=506, y=280)
+            Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.controller.exportReport).place(x=506, y=280)
 
         Button(self.left_frame, text="Cập nhật", width=10, font=(
-            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.updateTable).place(x=270, y=8)
+            Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.controller.updateTable).place(x=270, y=8)
 
         Button(self.right_frame, text="Cập nhật", width=10, font=(
-            Fonts.primary, 12, "bold"), bg=Colors.button, bg=Colors.textButton, command=self.updateChart).place(x=506, y=10)
+            Fonts.primary, 12, "bold"), bg=Colors.button, fg=Colors.textButton, command=self.controller.updateChart).place(x=506, y=10)
 
         #=========================================#
 
@@ -130,214 +121,3 @@ class AttendanceView:
         self.to_date_entry = DateEntry(self.right_frame, textvariable=self.to_date_var, width=17, font=(
             Fonts.primary, 12, "bold"), date_pattern='dd/mm/y')
         self.to_date_entry.place(x=300, y=16)
-
-    #========== import class function ========#
-    def importClass(self):
-        fln = filedialog.askopenfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
-            ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
-        if (len(fln) == 0):
-            return
-        try:
-            self.student_df = pd.read_csv(fln)
-            messagebox.showinfo("Success", "Thành công", parent=self.root)
-        except Exception as es:
-            messagebox.showerror(
-                "Error", "Định dạng file không hợp lệ", parent=self.root)
-
-    #========== import report function ========#
-    def importReport(self):
-        fln = filedialog.askopenfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
-            ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
-        if (len(fln) == 0):
-            return
-        try:
-            self.student_table.delete(*self.student_table.get_children())
-
-            with open(fln, "r", newline='', encoding="utf-8") as f:
-                csv_reader = csv.reader(f)
-                line_count = 0
-
-                for row in csv_reader:
-                    self.times = {}
-                    self.attendances = []
-
-                    line_count += 1
-
-                    if line_count != 1:
-                        if row[1] != '':
-                            if row[0] != 'Vắng':
-                                self.attendances.append(row[1])
-                                self.times[row[1]] = row[0]
-                            self.student_table.insert("", END, values=row)
-                    else:
-                        if row[0] != '\ufeffĐiểm danh' or row[1] != 'MSSV' or row[2] != 'Họ và tên' or row[3] != 'Ghi chú':
-                            messagebox.showerror(
-                                "Error", "Định dạng file không hợp lệ", parent=self.root)
-                            return
-
-            messagebox.showinfo("Success", "Thành công", parent=self.root)
-        except Exception as es:
-            messagebox.showerror(
-                "Error", "Định dạng file không hợp lệ", parent=self.root)
-
-    #========== export report function ========#
-    def exportReport(self):
-        fln = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(
-            ("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
-        if (len(fln) == 0):
-            return
-        try:
-            date = self.date_var.get()
-            date = date.replace('/', '_')
-
-            with open(fln, "w", newline='', encoding="utf-8") as f:
-                f.write('\ufeff')
-                writer = csv.writer(f)
-                writer.writerows(
-                    [("Điểm danh", "MSSV", "Họ và tên", "Ghi chú")])
-                line_count = 0
-                writer = csv.writer(f)
-                for line in self.student_table.get_children():
-                    line_count += 1
-                    data = self.student_table.item(line)["values"]
-                    writer.writerows([(data[0], data[1], data[2], data[3])])
-                writer.writerows(
-                    [(f"Sĩ số ngày {date}: {len(self.attendances)} / {line_count}", "")])
-                messagebox.showinfo(
-                    "Success", f"Sĩ số ngày {date}: {len(self.attendances)} / {line_count}", parent=self.root)
-        except Exception as es:
-            messagebox.showerror(
-                "Error", f"due to :{str(es)}", parent=self.root)
-
-    #========== handle double clicked function ========#
-    def onDoubleClicked(self, event):
-        selected_item = self.student_table.selection()[0]
-        values = self.student_table.item(selected_item, "values")
-
-        if values[0] != 'Vắng':
-            return
-
-        if values[3] == '':
-            self.student_table.item(selected_item, text="blub", values=(
-                values[0], values[1], values[2], 'Có phép'))
-        else:
-            self.student_table.item(selected_item, text="blub", values=(
-                values[0], values[1], values[2], ''))
-
-    #========== update chart function ========#
-    def updateChart(self):
-        if self.student_df.empty:
-            messagebox.showerror(
-                "Error", f"Vui lòng nhập dữ liệu lớp trước!", parent=self.root)
-            return
-
-        from_date = datetime.strptime(self.from_date_var.get(), "%d/%m/%Y")
-        to_date = datetime.strptime(self.to_date_var.get(), "%d/%m/%Y")
-
-        directory = 'attendance'
-        self.student_df['absents'] = 0
-
-        for filename in os.listdir(directory):
-            data_path = os.path.join(directory, filename)
-            if os.path.isfile(data_path):
-                splited = filename.split('.')
-                current_date = datetime.strptime(splited[0], "%d_%m_%Y")
-                if current_date >= from_date and current_date <= to_date:
-                    attendances = []
-                    with open(data_path, "r", encoding="utf-8") as f:
-                        csv_reader = csv.reader(f)
-                        for row in csv_reader:
-                            attendances.append(row[1])
-                    for row in self.student_df.index:
-                        if str(self.student_df['studentID'][row]) not in attendances:
-                            self.student_df['absents'][row] += 1
-
-        data = {
-            'type': ['1', '2', '3', '4', '>4'],
-            'numOfStudents': [0, 0, 0, 0, 0]
-        }
-
-        for row in self.student_df.index:
-            if self.student_df['absents'][row] == 0:
-                continue
-            elif self.student_df['absents'][row] <= 4:
-                data['numOfStudents'][self.student_df['absents'][row] - 1] += 1
-            else:
-                data['numOfStudents'][4] += 1
-
-        df = pd.DataFrame(data)
-
-        x_axis = df['type']
-        y_axis = df['numOfStudents']
-
-        # Figure size
-        fig = plt.figure(figsize=(16, 9))
-        # Add subplot
-        ax = fig.add_subplot()
-        # Horizontal bar plot
-        ax.bar(x_axis, y_axis)
-
-        for bar in ax.patches:
-            ax.annotate(bar.get_height(),
-                        (bar.get_x() + bar.get_width() / 2,
-                         bar.get_height()), ha='center', va='center',
-                        size=8, xytext=(0, 8),
-                        textcoords='offset points')
-
-        ax.set_xlabel('Số buổi vắng')
-        ax.set_ylabel('Số học sinh')
-
-        ax.set_ylim([0, 100])
-
-        for widget in self.chart_frame.winfo_children():
-            widget.destroy()
-
-        canvas = FigureCanvasTkAgg(fig, self.chart_frame)
-        canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-
-        plt.close(fig)
-
-    #========== update table function ========#
-    def updateTable(self):
-        if self.student_df.empty:
-            messagebox.showerror(
-                "Error", f"Vui lòng nhập dữ liệu lớp trước!", parent=self.root)
-            return
-
-        date = self.date_var.get()
-        date = date.replace('/', '_')
-
-        data_path = f"attendance/{date}.csv"
-
-        try:
-            with open(data_path, "r", encoding="utf-8") as f:
-                self.times = {}
-                self.attendances = []
-                csv_reader = csv.reader(f)
-                for row in csv_reader:
-                    self.attendances.append(row[1])
-                    self.times[row[1]] = row[0]
-        except Exception as es:
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror(
-                "Error", f"Không có báo cáo của ngày {self.date_var.get()}", parent=self.root)
-            return
-
-        self.student_table.delete(*self.student_table.get_children())
-
-        for row in self.student_df.index:
-            if str(self.student_df['studentID'][row]) in self.attendances:
-                self.student_table.insert("", END, values=[
-                    self.times[str(self.student_df['studentID'][row])],
-                    self.student_df['studentID'][row],
-                    self.student_df['studentName'][row],
-                    ''
-                ])
-            else:
-                self.student_table.insert("", END, values=[
-                    'Vắng',
-                    self.student_df['studentID'][row],
-                    self.student_df['studentName'][row],
-                    ''
-                ])
