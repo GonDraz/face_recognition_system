@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 
-def get_landmark_model(saved_model='Models/pose_model'):
+def get_landmark_model(saved_model='include/models/pose_model'):
     """
     Get the facial landmark model. 
     Original repository: https://github.com/yinguobing/cnn-facial-landmark
@@ -13,7 +13,7 @@ def get_landmark_model(saved_model='Models/pose_model'):
     Parameters
     ----------
     saved_model : string, optional
-        Path to facial landmarks model. The default is 'models/pose_model'.
+        Path to facial landmarks model. The default is 'include/models/pose_model'.
 
     Returns
     -------
@@ -24,6 +24,7 @@ def get_landmark_model(saved_model='Models/pose_model'):
     #model = keras.models.load_model(saved_model)
     model = tf.saved_model.load(saved_model)
     return model
+
 
 def get_square_box(box):
     """Get a square box out of the given box, by expanding it."""
@@ -57,13 +58,15 @@ def get_square_box(box):
 
     return [left_x, top_y, right_x, bottom_y]
 
+
 def move_box(box, offset):
-        """Move the box to direction specified by vector offset"""
-        left_x = box[0] + offset[0]
-        top_y = box[1] + offset[1]
-        right_x = box[2] + offset[0]
-        bottom_y = box[3] + offset[1]
-        return [left_x, top_y, right_x, bottom_y]
+    """Move the box to direction specified by vector offset"""
+    left_x = box[0] + offset[0]
+    top_y = box[1] + offset[1]
+    right_x = box[2] + offset[0]
+    bottom_y = box[3] + offset[1]
+    return [left_x, top_y, right_x, bottom_y]
+
 
 def detect_marks(img, model, face):
     """
@@ -88,7 +91,7 @@ def detect_marks(img, model, face):
     offset_y = int(abs((face[3] - face[1]) * 0.1))
     box_moved = move_box(face, [0, offset_y])
     facebox = get_square_box(box_moved)
-    
+
     h, w = img.shape[:2]
     if facebox[0] < 0:
         facebox[0] = 0
@@ -98,12 +101,12 @@ def detect_marks(img, model, face):
         facebox[2] = w
     if facebox[3] > h:
         facebox[3] = h
-    
+
     face_img = img[facebox[1]: facebox[3],
-                     facebox[0]: facebox[2]]
+                   facebox[0]: facebox[2]]
     face_img = cv2.resize(face_img, (128, 128))
     face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
-    
+
     # # Actual detection.
     predictions = model.signatures["predict"](
         tf.constant([face_img], dtype=tf.uint8))
@@ -111,13 +114,14 @@ def detect_marks(img, model, face):
     # Convert predictions to landmarks.
     marks = np.array(predictions['output']).flatten()[:136]
     marks = np.reshape(marks, (-1, 2))
-    
+
     marks *= (facebox[2] - facebox[0])
     marks[:, 0] += facebox[0]
     marks[:, 1] += facebox[1]
     marks = marks.astype(np.uint)
 
     return marks
+
 
 def draw_marks(image, marks, color=(0, 255, 0)):
     """
@@ -139,4 +143,3 @@ def draw_marks(image, marks, color=(0, 255, 0)):
     """
     for mark in marks:
         cv2.circle(image, (mark[0], mark[1]), 2, color, -1, cv2.LINE_AA)
-    

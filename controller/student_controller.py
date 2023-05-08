@@ -6,15 +6,140 @@ import os
 import threading
 from tkinter import *
 from tkinter import messagebox, filedialog
-
 import cv2
 import numpy as np
-from include.face_detector import find_faces, get_face_detector
-from include.face_landmarks import detect_marks, get_landmark_model
 
 from models.student_model import StudentModel
+from store.path import Path
 from store.window_setup import WindowSetup
-from view.student_view import StudentView, head_pose_points
+from view.student_view import StudentView
+
+from include.face_landmarks import get_landmark_model, detect_marks
+from include.face_detector import get_face_detector, find_faces
+
+
+def get_2d_points(img, rotation_vector, translation_vector, camera_matrix, val):
+    """Return the 3D points present as 2D for making annotation box"""
+    point_3d = []
+    dist_coeffs = np.zeros((4, 1))
+    rear_size = val[0]
+    rear_depth = val[1]
+    point_3d.append((-rear_size, -rear_size, rear_depth))
+    point_3d.append((-rear_size, rear_size, rear_depth))
+    point_3d.append((rear_size, rear_size, rear_depth))
+    point_3d.append((rear_size, -rear_size, rear_depth))
+    point_3d.append((-rear_size, -rear_size, rear_depth))
+
+    front_size = val[2]
+    front_depth = val[3]
+    point_3d.append((-front_size, -front_size, front_depth))
+    point_3d.append((-front_size, front_size, front_depth))
+    point_3d.append((front_size, front_size, front_depth))
+    point_3d.append((front_size, -front_size, front_depth))
+    point_3d.append((-front_size, -front_size, front_depth))
+    point_3d = np.array(point_3d, dtype=np.float).reshape(-1, 3)
+
+    # Map to 2d img points
+    (point_2d, _) = cv2.projectPoints(point_3d,
+                                      rotation_vector,
+                                      translation_vector,
+                                      camera_matrix,
+                                      dist_coeffs)
+    point_2d = np.int32(point_2d.reshape(-1, 2))
+    return point_2d
+
+
+def draw_annotation_box(img, rotation_vector, translation_vector, camera_matrix,
+                        rear_size=300, rear_depth=0, front_size=500, front_depth=400,
+                        color=(255, 255, 0), line_width=2):
+    """
+    Draw a 3D anotation box on the face for head pose estimation
+
+    Parameters
+    ----------
+    img : np.unit8
+        Original Image.
+    rotation_vector : Array of float64
+        Rotation Vector obtained from cv2.solvePnP
+    translation_vector : Array of float64
+        Translation Vector obtained from cv2.solvePnP
+    camera_matrix : Array of float64
+        The camera matrix
+    rear_size : int, optional
+        Size of rear box. The default is 300.
+    rear_depth : int, optional
+        The default is 0.
+    front_size : int, optional
+        Size of front box. The default is 500.
+    front_depth : int, optional
+        Front depth. The default is 400.
+    color : tuple, optional
+        The color with which to draw annotation box. The default is (255, 255, 0).
+    line_width : int, optional
+        line width of lines drawn. The default is 2.
+
+    Returns
+    -------
+    None.
+
+    """
+
+    rear_size = 1
+    rear_depth = 0
+    front_size = img.shape[1]
+    front_depth = front_size * 2
+    val = [rear_size, rear_depth, front_size, front_depth]
+    point_2d = get_2d_points(img, rotation_vector,
+                             translation_vector, camera_matrix, val)
+
+
+face_classifier = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+
+def face_cropped(img1):
+    gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+    # Scaling factor=1.3
+    # Minimum neighbor=5
+
+    for (x, y, w, h) in faces:
+        face_cropped = img1[y:y + h, x:x + w]
+        return face_cropped
+
+
+def head_pose_points(img, rotation_vector, translation_vector, camera_matrix):
+    """
+    Get the points to estimate head pose sideways
+
+    Parameters
+    ----------
+    img : np.unit8
+        Original Image.
+    rotation_vector : Array of float64
+        Rotation Vector obtained from cv2.solvePnP
+    translation_vector : Array of float64
+        Translation Vector obtained from cv2.solvePnP
+    camera_matrix : Array of float64
+        The camera matrix
+
+    Returns
+    -------
+    (x, y) : tuple
+        Coordinates of line to estimate head pose
+
+    """
+    rear_size = 1
+    rear_depth = 0
+    front_size = img.shape[1]
+    front_depth = front_size * 2
+    val = [rear_size, rear_depth, front_size, front_depth]
+    point_2d = get_2d_points(img, rotation_vector,
+                             translation_vector, camera_matrix, val)
+    y = (point_2d[5] + point_2d[8]) // 2
+    x = point_2d[2]
+
+    return (x, y)
 
 
 class StudentController:
@@ -215,13 +340,10 @@ class StudentController:
             try:
 
                 self.model.my_cursor.execute("select * from student")
-                myresult = self.model.my_cursor.fetchall()
+                myResult = self.model.my_cursor.fetchall()
                 id = self.view.var_std_id.get()
-                print(id)
-                for x in myresult:
-                    print(x)
+                for x in myResult:
                     if x[4] == int(id):
-                        print(x)
                         break
                 self.model.my_cursor.execute("update student set dep=%s,course=%s,year=%s,semester=%s,division=%s,roll=%s,gender=%s,dob=%s,mail=%s,phone=%s,address=%s,teacher=%s,photoSample=%s where studentID=%s", (
                     self.view.var_dep.get(),
@@ -318,11 +440,6 @@ class StudentController:
                             x1, x2 = head_pose_points(
                                 img, rotation_vector, translation_vector, camera_matrix)
 
-                            # cv2.line(img, p1, p2, (0, 255, 255), 2)
-                            # cv2.line(img, tuple(x1), tuple(x2), (255, 255, 0), 2)
-                            # for (x, y) in marks:
-                            # cv2.circle(img, (x, y), 4, (255, 255, 0), -1)
-                            # cv2.putText(img, str(p1), p1, font, 1, (0, 255, 255), 1)
                             try:
                                 m = (p2[1] - p1[1]) / (p2[0] - p1[0])
                                 ang1 = int(math.degrees(math.atan(m)))
@@ -335,13 +452,11 @@ class StudentController:
                             except:
                                 ang2 = 90
 
-                                # print('div by zero error')
-
                             if img_id6 < 10:
                                 img_id1 = img_id1 + 1
                                 img_id6 = img_id6 + 1
                                 face1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                                file_name_path = "data/images/" + \
+                                file_name_path = Path.Data.images + \
                                     str(x[4])+"/"+str(img_id1)+".jpg"
                                 cv2.imwrite(file_name_path, face1)
                                 cv2.putText(face1, str(
@@ -349,34 +464,28 @@ class StudentController:
                                 cv2.imshow("cropped face", face1)
 
                             if img_id4 < 10:
-                                print('nên Head left')
                                 cv2.putText(img, 'NEN QUAY TRAI',
                                             (90, 30), font, 2, (255, 255, 128), 3)
 
                             if img_id3 < 10 and img_id4 == 10:
-                                print('NEN Head right')
                                 cv2.putText(img, 'NEN QUAY PHAI',
                                             (90, 30), font, 2, (255, 255, 128), 3)
 
                             if img_id2 < 5 and img_id3 == 10 and img_id4 == 10:
-                                print('NEN Head up')
                                 cv2.putText(img, 'NEN QUAY LEN',
                                             (30, 30), font, 2, (255, 255, 128), 3)
 
                             if img_id5 < 5 and img_id2 == 5 and img_id3 == 10 and img_id4 == 10:
-                                print('NEN Head down')
                                 cv2.putText(img, 'NEN QUAY XUONG',
                                             (30, 30), font, 2, (255, 255, 128), 3)
 
                             if ang1 >= 48 and img_id5 < 5:
-
-                                print('Head down')
                                 cv2.putText(img, 'Head down', (30, 30),
                                             font, 2, (255, 255, 128), 3)
                                 img_id1 = img_id1 + 1
                                 img_id5 = img_id5 + 1
                                 face1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                                file_name_path = "data/images/" + \
+                                file_name_path = Path.Data.images + \
                                     str(x[4])+"/"+str(img_id1)+".jpg"
                                 cv2.imwrite(file_name_path, face1)
                                 cv2.putText(face1, str(
@@ -384,13 +493,12 @@ class StudentController:
                                 cv2.imshow("cropped face", face1)
 
                             elif ang1 <= -48 and img_id2 < 5:
-                                print('Head up')
                                 cv2.putText(img, 'Head up', (30, 30),
                                             font, 2, (255, 255, 128), 3)
                                 img_id1 = img_id1 + 1
                                 img_id2 = img_id2 + 1
                                 face1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                                file_name_path = "data/images/" + \
+                                file_name_path = Path.Data.images + \
                                     str(x[4])+"/"+str(img_id1)+".jpg"
                                 cv2.imwrite(file_name_path, face1)
                                 cv2.putText(face1, str(
@@ -398,13 +506,12 @@ class StudentController:
                                 cv2.imshow("cropped face", face1)
 
                             if ang2 >= 48 and img_id3 < 10:
-                                print('Head right')
                                 cv2.putText(img, 'Head right', (90, 30),
                                             font, 2, (255, 255, 128), 3)
                                 img_id1 = img_id1 + 1
                                 img_id3 = img_id3 + 1
                                 face1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                                file_name_path = "data/images/" + \
+                                file_name_path = Path.Data.images + \
                                     str(x[4])+"/"+str(img_id1)+".jpg"
                                 cv2.imwrite(file_name_path, face1)
                                 cv2.putText(face1, str(
@@ -418,7 +525,7 @@ class StudentController:
                                 img_id1 = img_id1 + 1
                                 img_id4 = img_id4 + 1
                                 face1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                                file_name_path = "data/images/" + \
+                                file_name_path = Path.Data.images + \
                                     str(x[4])+"/"+str(img_id1)+".jpg"
                                 cv2.imwrite(file_name_path, face1)
                                 cv2.putText(face1, str(
@@ -443,6 +550,7 @@ class StudentController:
 
 
 # ========================================================================
+
 
     def train_classifier(self):
         os.system("python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")

@@ -1,8 +1,4 @@
 {
-    "cSpell.words": [
-        "HUST"
-    ],
-    "python.analysis.extraPaths": [
-        "./Include"
-    ]
+  "cSpell.words": ["HUST", "imshow", "imwrite"],
+  "python.analysis.extraPaths": ["./Include"]
 }
