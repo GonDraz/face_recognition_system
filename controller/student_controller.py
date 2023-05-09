@@ -9,7 +9,6 @@ from tkinter import messagebox, filedialog
 import cv2
 import numpy as np
 
-from models.student_model import StudentModel
 from store.path import Path
 from store.window_setup import WindowSetup
 from view.student_view import StudentView
@@ -149,17 +148,22 @@ class StudentController:
         self.root.geometry(WindowSetup.screen)
         self.root.title("Thông tin sinh viên")
 
-        self.model = StudentModel()
         self.view = StudentView(root, self)
 
-        # self.fetch_data_threading = threading.Thread(target=self.fetch_data())
-        # self.fetch_data_threading.start()
+        self.start_threading = threading.Thread(target=self.start)
+        self.start_threading.start()
 
+        self.view.root.mainloop()
+        # self.fetch_data()
+
+    def start(self):
+        from models.student_model import StudentModel
+
+        self.model = StudentModel()
         self.fetch_data()
 
-        self.root.mainloop()
-
     # ============= FUNCTION DECRATION================
+
     def addStudent(self):
         if self.view.var_dep.get() == "Chọn ngành" or self.view.var_std_name.get() == "" or self.view.var_std_id.get() == "":
             messagebox.showerror(

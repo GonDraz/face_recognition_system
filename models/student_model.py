@@ -9,10 +9,10 @@ from store.path import Path
 
 
 class StudentModel:
-    conn = mysql.connector.connect(
-        host=MySqlSetting.host, username=MySqlSetting.username, password=MySqlSetting.password, database=MySqlSetting.database)
-
-    my_cursor = conn.cursor()
+    def __init__(self):
+        self.conn = mysql.connector.connect(
+            host=MySqlSetting.host, username=MySqlSetting.username, password=MySqlSetting.password, database=MySqlSetting.database)
+        self.my_cursor = self.conn.cursor()
 
     # def __init__(self):
     #     pass
