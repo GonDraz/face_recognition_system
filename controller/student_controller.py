@@ -12,6 +12,7 @@ import numpy as np
 from store.path import Path
 from store.window_setup import WindowSetup
 from view.student_view import StudentView
+from models.student_model import StudentModel
 
 from include.face_landmarks import get_landmark_model, detect_marks
 from include.face_detector import get_face_detector, find_faces
@@ -150,17 +151,10 @@ class StudentController:
 
         self.view = StudentView(root, self)
 
-        self.start_threading = threading.Thread(target=self.start)
-        self.start_threading.start()
-
-        self.view.root.mainloop()
-        # self.fetch_data()
-
-    def start(self):
-        from models.student_model import StudentModel
-
         self.model = StudentModel()
         self.fetch_data()
+
+        self.view.root.mainloop()
 
     # ============= FUNCTION DECRATION================
 
