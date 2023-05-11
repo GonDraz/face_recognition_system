@@ -551,7 +551,7 @@ class StudentController:
 
 
     def train_classifier(self):
-        os.system("python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")
-        os.system("python face_recognition/classifier.py TRAIN data/image Models/20180402-114759.pb Models/facemodel.pkl --batch_size 1000")
+        os.system(f"python src/align_dataset_mtcnn.py  data/images data/image --image_size 160 --margin 32  --random_order --gpu_memory_fraction 0.25")
+        os.system(f"python face_recognition/classifier.py TRAIN data/image Models/20180402-114759.pb Models/facemodel.pkl --batch_size 1000")
         messagebox.showinfo("Success", "training thành công",
                             parent=self.view.root)

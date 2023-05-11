@@ -48,8 +48,8 @@ class HomeView:
         self.faceRecImg = ImageTk.PhotoImage(Images.faceRec.resize(
             (180, 220), Image.ANTIALIAS))
         Button(backgroundLbl, image=self.faceRecImg, cursor="hand2",
-               command=controller.face_data).place(x=600, y=50, width=180, height=220)
-        Button(backgroundLbl, text="Điểm danh", cursor="hand2", command=controller.face_data, font=(
+               command=controller.faceRecCam).place(x=600, y=50, width=180, height=220)
+        Button(backgroundLbl, text="Điểm danh", cursor="hand2", command=controller.faceRecCam, font=(
             Fonts.primary, 15, "bold"), bg=Colors.button, fg=Colors.textButton).place(x=600, y=250, width=180, height=40)
 
         # Attendance button

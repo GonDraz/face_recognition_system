@@ -26,8 +26,8 @@ class HomeController:
     def openStudentWindow(self):
         Router.student(Toplevel(self.root))
 
-    def face_data(self):
-        os.system("python face_recognition/face_rec_cam.py")
+    def faceRecCam(self):
+        Router.faceRecCam(Toplevel(self.root))
 
     def helper(self):
         Router.helper(Toplevel(self.root))

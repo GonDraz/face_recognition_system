@@ -14,3 +14,11 @@ class Path:
 
     class Include:
         _include = "include/"
+
+        _model = _include + "models/"
+
+        faceModel = _model + "facemodel.pkl"
+
+        pb = _model + "20180402-114759.pb"
+
+        align = _include + "align"

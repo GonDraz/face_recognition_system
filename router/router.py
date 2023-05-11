@@ -17,3 +17,7 @@ class Router:
     def attendance(root):
         from controller.attendance_controller import AttendanceController
         AttendanceController(root)
+
+    def faceRecCam(root):
+        from controller.face_rec_cam_controller import FaceRecCamController
+        FaceRecCamController(root)
