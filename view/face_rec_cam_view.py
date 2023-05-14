@@ -34,7 +34,7 @@ from store.path import Path
 
 
 def mark_attendance_by_id(id):
-    pathname = f"data/infor/{id}.json"
+    pathname = Path.Data.info + f"{id}.json"
 
     try:
         with open(pathname, "r", encoding="utf-8") as f:

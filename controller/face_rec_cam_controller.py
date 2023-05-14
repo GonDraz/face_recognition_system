@@ -14,6 +14,11 @@ class FaceRecCamController:
 
         self.view = FaceRecCamView(root, self)
 
+        def on_closing():
+            self.view.root.quit()
+
+        self.view.root.protocol("WM_DELETE_WINDOW", on_closing)
+
         self.model = FaceRecCamModel()
 
         self.view.root.mainloop()
